@@ -19,7 +19,15 @@ setBatchMode(true);
 	//print(Name);
 	rename(Name);
 	selectWindow(Name);saveAs("TIFF",Dir2+Name+"_cleaned");rename(Name);
-	
+	//remove Bristles
+	selectWindow(Name);run("8-bit");
+	setAutoThreshold("Minimum");run("Create Selection");run("Enlarge...", "enlarge=3");roiManager("Add");
+	run("Select All");setAutoThreshold("Moments dark");run("Create Selection");run("Measure");
+	AverageIntensity = getResult("Mean",0);print(AverageIntensity);
+	roiManager("Select", 0); changeValues(-255,255,AverageIntensity);
+	roiManager("Delete");selectWindow("Results");IJ.deleteRows(0, 0);
+	selectWindow(Name);saveAs("TIFF",Dir2+Name+"_cleaned2");rename(Name);
+	//
 	//run("Duplicate...", Name2);//run("8-bit");
 	run("Select All");
 	getSelectionBounds(x, y, width, height);
@@ -46,7 +54,7 @@ setBatchMode(true);
 	
 	//Array.show(AverageIntensityRois);
 	
-	newImage("replace", "32-bit white", 10, 10, 1);
+	newImage("replace", "8-bit white", 10, 10, 1);
 	
 	for (i=0;i<NumberofRois;i++){
 		Value = AverageIntensityRois[i];
@@ -59,7 +67,7 @@ setBatchMode(true);
 	run("Select All");
 	run("Duplicate...", Name+"_binned");rename(Name+"_swapped");
 	
-	newImage("transfer", "32-bit white", 10, 10, 1);
+	newImage("transfer", "8-bit white", 10, 10, 1);
 	//setBatchMode(true);
 	for (i=0;i<NumberofRois*3;i++){
 		Roi1 = floor(random()*NumberofRois);
